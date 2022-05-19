@@ -209,6 +209,16 @@ public class FlutterBoostActivity extends FlutterActivity implements FlutterView
     @Override
     protected void onDestroy() {
         stage = LifecycleStage.ON_DESTROY;
+        FlutterContainerManager containerManager = FlutterContainerManager.instance();
+        FlutterViewContainer top = containerManager.getTopActivityContainer();
+        int _size = containerManager.getContainerSize();
+        if (isAttached && top == this && _size >= 2) {
+            FlutterViewContainer last = containerManager.getLastContainer();
+            if (FlutterBoostFragment.class.isInstance(last)) {
+                last.platformPluginResume();
+            }
+        }
+
         detachFromEngineIfNeeded();
         textureHooker.onFlutterTextureViewRelease();
 

@@ -1,6 +1,6 @@
 package com.idlefish.flutterboost.containers;
 
-enum LifecycleStage {
+public enum LifecycleStage {
     ON_CREATE,
     ON_START,
     ON_RESUME,

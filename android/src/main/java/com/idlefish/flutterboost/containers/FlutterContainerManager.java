@@ -71,6 +71,13 @@ public class FlutterContainerManager {
         return null;
     }
 
+    public FlutterViewContainer getLastContainer() {
+        if (activeContainers.size() > 1) {
+            return activeContainers.get(activeContainers.size()-2);
+        }
+        return null;
+    }
+
     public FlutterViewContainer getTopActivityContainer() {
         final int size = activeContainers.size();
         if (size == 0) {

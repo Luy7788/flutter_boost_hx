@@ -8,11 +8,14 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
+
+import androidx.annotation.ColorInt;
 
 import com.idlefish.flutterboost.Assert;
 import com.idlefish.flutterboost.FlutterBoost;
 import com.idlefish.flutterboost.FlutterBoostUtils;
-import com.idlefish.flutterboost.Messages;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -103,6 +106,8 @@ public class FlutterBoostFragment extends FlutterFragment implements FlutterView
             didFragmentHide();
         } else {
             didFragmentShow();
+            //MARK:设置多一次主题配置
+//          onUpdateSystemUiOverlays();
         }
         if (DEBUG) Log.d(TAG, "#onHiddenChanged: hidden="  + hidden + ", " + this);
     }
@@ -136,15 +141,50 @@ public class FlutterBoostFragment extends FlutterFragment implements FlutterView
         }
 
         stage = LifecycleStage.ON_RESUME;
-        if (!isHidden()) {
+        if (!isHidden() || (_isDetachFromEngineIfNeeded && whichFragmentIsDetach.equals(this.getUniqueId()))) {
+//        if (!isHidden()) {
+            _isDetachFromEngineIfNeeded = false;
+            whichFragmentIsDetach = "";
+
             didFragmentShow();
             getFlutterEngine().getLifecycleChannel().appIsResumed();
 
-            // Update system UI overlays to match Flutter's desired system chrome style
-            Assert.assertNotNull(platformPlugin);
-            platformPlugin.updateSystemUiOverlays();
+            onUpdateSystemUiOverlays();
         }
        if (DEBUG) Log.d(TAG, "#onResume: isHidden=" + isHidden() + ", " + this);
+    }
+
+    protected void onUpdateSystemUiOverlays() {
+        // Update system UI overlays to match Flutter's desired system chrome style
+        Assert.assertNotNull(platformPlugin);
+        platformPlugin.updateSystemUiOverlays();
+    }
+
+    //MARK:临时解决方案
+    @Override
+    public void platformPluginResume() {
+        didFragmentShow();
+        getFlutterEngine().getLifecycleChannel().appIsResumed();
+        // Update system UI overlays to match Flutter's desired system chrome style
+        Assert.assertNotNull(platformPlugin);
+        platformPlugin.updateSystemUiOverlays();
+    }
+
+    public void setupSystemUiVisibility(@ColorInt int color) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (getContextActivity() != null) {
+                Window window = getContextActivity().getWindow();
+                if (window != null) {
+                    window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                    window.setStatusBarColor(color);
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//                        window.getDecorView().setSystemUiVisibility(PlatformPlugin.DEFAULT_SYSTEM_UI | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+//                    } else {
+                        window.getDecorView().setSystemUiVisibility(PlatformPlugin.DEFAULT_SYSTEM_UI);
+//                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -156,6 +196,7 @@ public class FlutterBoostFragment extends FlutterFragment implements FlutterView
     @Override
     public void onPause() {
         super.onPause();
+//        if (_isHiden) return;
         if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
             FlutterViewContainer top = FlutterContainerManager.instance().getTopActivityContainer();
             if (top != null && top != this.getContextActivity() && !top.isOpaque() && top.isPausing()) {
@@ -174,6 +215,7 @@ public class FlutterBoostFragment extends FlutterFragment implements FlutterView
     @Override
     public void onStop() {
         super.onStop();
+//        if (_isHiden) return;
         stage = LifecycleStage.ON_STOP;
         getFlutterEngine().getLifecycleChannel().appIsResumed();
         if (DEBUG) Log.d(TAG, "#onStop: " + this);
@@ -340,8 +382,14 @@ public class FlutterBoostFragment extends FlutterFragment implements FlutterView
         }
     }
 
+    public static String whichFragmentIsDetach = "";
+    public boolean _isDetachFromEngineIfNeeded = false;
     @Override
     public void detachFromEngineIfNeeded() {
+//        if (isHidden()) {
+            this._isDetachFromEngineIfNeeded = true;
+            whichFragmentIsDetach = this.getUniqueId();
+//        }
         performDetach();
     }
 
