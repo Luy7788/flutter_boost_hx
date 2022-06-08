@@ -159,10 +159,10 @@ _Pragma("clang diagnostic pop")
         NSDictionary *args = arguments[@"args"];
         
         if ([event isEqualToString:@"enablePopGesture"]) {
-            // 多page情况下的侧滑动态禁用和启用事件
-            NSNumber *enableNum = args[@"enable"];
-            BOOL enable = [enableNum boolValue];
-            self.navigationController.interactivePopGestureRecognizer.enabled = enable;
+//            // 多page情况下的侧滑动态禁用和启用事件
+//            NSNumber *enableNum = args[@"enable"];
+//            BOOL enable = [enableNum boolValue];
+//            self.navigationController.interactivePopGestureRecognizer.enabled = enable;
         }
     } forName:self.uniqueId];
 }
@@ -279,6 +279,16 @@ _Pragma("clang diagnostic pop")
     
 }
 
+- (void)setupPopGesture:(BOOL)enable {
+    if (enable == true) {
+        self.disablePopGesture = nil;
+        self.navigationController.interactivePopGestureRecognizer.enabled = YES;
+    } else if(enable == false) {
+        self.disablePopGesture = [NSNumber numberWithInt:1];
+        self.navigationController.interactivePopGestureRecognizer.enabled = NO;
+    }
+}
+
 - (void)viewDidAppear:(BOOL)animated
 {
     //Ensure flutter view is attached.
@@ -304,6 +314,9 @@ _Pragma("clang diagnostic pop")
 
 - (void)viewWillDisappear:(BOOL)animated
 {
+    if (self.disablePopGesture != nil) {
+        self.navigationController.interactivePopGestureRecognizer.enabled = YES;
+    }
     [[[UIApplication sharedApplication] keyWindow] endEditing:YES];
     [super viewWillDisappear:animated];
 }
