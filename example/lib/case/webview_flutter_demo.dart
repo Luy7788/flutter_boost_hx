@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boost/flutter_boost.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 
 class WebViewExample extends StatefulWidget {
   @override
@@ -10,12 +12,16 @@ class WebViewExample extends StatefulWidget {
 class WebViewExampleState extends State<WebViewExample> {
   bool withContainer = true;
   bool visible = true;
-  final url = 'https://github.com/alibaba/flutter_boost';
+  // final url = 'https://github.com/alibaba/flutter_boost';
+  final url = "http://42.194.182.105:9600/test/zdm-pay";
 
   @override
   void initState() {
     super.initState();
     // Enable hybrid composition.
+    if (Platform.isAndroid) {
+      WebView.platform = SurfaceAndroidWebView();
+    }
     // if (Platform.isAndroid) WebView.platform = SurfaceAndroidWebView();
   }
 
