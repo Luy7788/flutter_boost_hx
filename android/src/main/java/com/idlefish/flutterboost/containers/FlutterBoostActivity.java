@@ -1,31 +1,5 @@
 package com.idlefish.flutterboost.containers;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.os.Build;
-import android.os.Bundle;
-import android.util.Log;
-
-import com.idlefish.flutterboost.Assert;
-import com.idlefish.flutterboost.FlutterBoost;
-import com.idlefish.flutterboost.FlutterBoostUtils;
-import com.idlefish.flutterboost.Messages;
-
-import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
-import io.flutter.embedding.android.FlutterActivity;
-import io.flutter.embedding.android.FlutterActivityLaunchConfigs.BackgroundMode;
-import io.flutter.embedding.android.FlutterTextureView;
-import io.flutter.embedding.android.FlutterView;
-import io.flutter.embedding.android.RenderMode;
-import io.flutter.embedding.engine.FlutterEngine;
-import io.flutter.embedding.engine.renderer.FlutterRenderer;
-import io.flutter.plugin.platform.PlatformPlugin;
-
 import static com.idlefish.flutterboost.containers.FlutterActivityLaunchConfigs.ACTIVITY_RESULT_KEY;
 import static com.idlefish.flutterboost.containers.FlutterActivityLaunchConfigs.EXTRA_BACKGROUND_MODE;
 import static com.idlefish.flutterboost.containers.FlutterActivityLaunchConfigs.EXTRA_CACHED_ENGINE_ID;
@@ -35,7 +9,35 @@ import static com.idlefish.flutterboost.containers.FlutterActivityLaunchConfigs.
 import static com.idlefish.flutterboost.containers.FlutterActivityLaunchConfigs.EXTRA_URL;
 import static com.idlefish.flutterboost.containers.FlutterActivityLaunchConfigs.EXTRA_URL_PARAM;
 
-public class FlutterBoostActivity extends FlutterActivity implements FlutterViewContainer {
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Build;
+import android.os.Bundle;
+import android.util.Log;
+
+import androidx.annotation.NonNull;
+
+import com.idlefish.flutterboost.Assert;
+import com.idlefish.flutterboost.FlutterBoost;
+import com.idlefish.flutterboost.FlutterBoostUtils;
+
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
+import io.flutter.embedding.android.ExclusiveAppComponent;
+import io.flutter.embedding.android.FlutterActivity;
+import io.flutter.embedding.android.FlutterActivityLaunchConfigs.BackgroundMode;
+import io.flutter.embedding.android.FlutterTextureView;
+import io.flutter.embedding.android.FlutterView;
+import io.flutter.embedding.android.RenderMode;
+import io.flutter.embedding.engine.FlutterEngine;
+import io.flutter.embedding.engine.renderer.FlutterRenderer;
+import io.flutter.plugin.platform.PlatformPlugin;
+
+public class FlutterBoostActivity extends FlutterActivity implements FlutterViewContainer, ExclusiveAppComponent<Activity> {
     private static final String TAG = "FlutterBoostActivity";
     private static final boolean DEBUG = false;
     private final String who = UUID.randomUUID().toString();
@@ -44,6 +46,12 @@ public class FlutterBoostActivity extends FlutterActivity implements FlutterView
     private PlatformPlugin platformPlugin;
     private LifecycleStage stage;
     private boolean isAttached = false;
+
+    @NonNull
+    @Override
+    public Activity getAppComponent() {
+        return getActivity();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -152,7 +160,8 @@ public class FlutterBoostActivity extends FlutterActivity implements FlutterView
     private void performAttach() {
         if (!isAttached) {
             // Attach plugins to the activity.
-            getFlutterEngine().getActivityControlSurface().attachToActivity(getActivity(), getLifecycle());
+//            getFlutterEngine().getActivityControlSurface().attachToActivity(getActivity(), getLifecycle());
+            getFlutterEngine().getActivityControlSurface().attachToActivity(this, getLifecycle());
 
             if (platformPlugin == null) {
                 platformPlugin = new PlatformPlugin(getActivity(), getFlutterEngine().getPlatformChannel());
@@ -298,7 +307,8 @@ public class FlutterBoostActivity extends FlutterActivity implements FlutterView
 
     @Override
     public Map<String, Object> getUrlParams() {
-        return (HashMap<String, Object>)getIntent().getSerializableExtra(EXTRA_URL_PARAM);
+        return (HashMap<String, Object>) getIntent().getSerializableExtra(EXTRA_URL_PARAM);
+//        return (HashMap<String, Object>)getIntent().getSerializableExtra(EXTRA_URL_PARAM);
     }
 
     @Override
@@ -354,7 +364,7 @@ public class FlutterBoostActivity extends FlutterActivity implements FlutterView
         }
 
         public FlutterBoostActivity.CachedEngineIntentBuilder urlParams(Map<String, Object> params) {
-            this.params = (params instanceof HashMap) ? (HashMap)params : new HashMap<String, Object>(params);
+            this.params = (params instanceof HashMap) ? (HashMap) params : new HashMap<String, Object>(params);
             return this;
         }
 

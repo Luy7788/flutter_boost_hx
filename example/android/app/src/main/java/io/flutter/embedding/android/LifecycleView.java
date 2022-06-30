@@ -41,6 +41,11 @@ public class LifecycleView extends FrameLayout implements LifecycleOwner, Flutte
     mActivty = context;
   }
 
+    @Override
+    public void updateSystemUiOverlays() {
+        mDelegate.updateSystemUiOverlays();
+    }
+
   public void setArguments(Bundle args) {
     mArguments = args;
   }
