@@ -13,7 +13,9 @@ class WebViewExampleState extends State<WebViewExample> {
   bool withContainer = true;
   bool visible = true;
   // final url = 'https://github.com/alibaba/flutter_boost';
-  final url = "http://42.194.182.105:9600/test/zdm-pay";
+  // final url = "http://42.194.182.105:9600/test/zdm-pay";
+  // final url = "http://42.194.182.105:9000/#/pages/test/index";
+  final url = "https://www.baidu.com";
 
   @override
   void initState() {
@@ -96,47 +98,52 @@ class WebViewExampleState extends State<WebViewExample> {
                         },
                       ),
                     ),
-                    Stack(
-                      children: <Widget>[
-                        if (visible)
-                          Container(
-                            decoration: BoxDecoration(
-                                border:
-                                    Border.all(color: Colors.blue, width: 5.0)),
-                            width: 400,
-                            height: 300,
-                            margin: const EdgeInsets.all(10.0),
-                            child: WebView(
-                              initialUrl: url,
-                            ),
-                          ),
-                        Opacity(
-                          opacity: visible ? 1.0 : 0.5,
-                          child: Container(
-                            decoration: BoxDecoration(
-                                border:
-                                    Border.all(color: Colors.red, width: 5.0)),
-                            width: 200,
-                            height: 200,
-                            margin: const EdgeInsets.all(10.0),
-                            child: WebView(
-                              initialUrl: url,
-                            ),
-                          ),
-                        ),
-                        Container(
-                          decoration: BoxDecoration(
-                              border:
-                                  Border.all(color: Colors.blue, width: 5.0)),
-                          width: 100,
-                          height: 100,
-                          margin: const EdgeInsets.all(10.0),
-                          child: WebView(
-                            initialUrl: url,
-                          ),
-                        ),
-                      ],
+                    Expanded(
+                      child: WebView(
+                        initialUrl: url,
+                      ),
                     ),
+                    // Stack(
+                    //   children: <Widget>[
+                    //     if (visible)
+                    //       Container(
+                    //         decoration: BoxDecoration(
+                    //             border:
+                    //                 Border.all(color: Colors.blue, width: 5.0)),
+                    //         width: 400,
+                    //         height: 300,
+                    //         margin: const EdgeInsets.all(10.0),
+                    //         child: WebView(
+                    //           initialUrl: url,
+                    //         ),
+                    //       ),
+                    //     Opacity(
+                    //       opacity: visible ? 1.0 : 0.5,
+                    //       child: Container(
+                    //         decoration: BoxDecoration(
+                    //             border:
+                    //                 Border.all(color: Colors.red, width: 5.0)),
+                    //         width: 200,
+                    //         height: 200,
+                    //         margin: const EdgeInsets.all(10.0),
+                    //         child: WebView(
+                    //           initialUrl: url,
+                    //         ),
+                    //       ),
+                    //     ),
+                    //     Container(
+                    //       decoration: BoxDecoration(
+                    //           border:
+                    //               Border.all(color: Colors.blue, width: 5.0)),
+                    //       width: 100,
+                    //       height: 100,
+                    //       margin: const EdgeInsets.all(10.0),
+                    //       child: WebView(
+                    //         initialUrl: url,
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
                   ],
                 ),
               ),
