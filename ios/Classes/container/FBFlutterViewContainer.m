@@ -159,10 +159,10 @@ _Pragma("clang diagnostic pop")
         NSDictionary *args = arguments[@"args"];
         
         if ([event isEqualToString:@"enablePopGesture"]) {
-            // 多page情况下的侧滑动态禁用和启用事件
-            NSNumber *enableNum = args[@"enable"];
-            BOOL enable = [enableNum boolValue];
-            self.navigationController.interactivePopGestureRecognizer.enabled = enable;
+//            // 多page情况下的侧滑动态禁用和启用事件
+//            NSNumber *enableNum = args[@"enable"];
+//            BOOL enable = [enableNum boolValue];
+//            self.navigationController.interactivePopGestureRecognizer.enabled = enable;
         }
     } forName:self.uniqueId];
 }
