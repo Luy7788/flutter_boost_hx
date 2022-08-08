@@ -9,7 +9,7 @@
 #import "FlutterBoost.h"
 NS_ASSUME_NONNULL_BEGIN
 
-typedef void(^swipeCallback)(UIScreenEdgePanGestureRecognizer *edgePan);
+typedef void(^swipeCallback)(CGPoint point);
 
 @interface HXFlutterViewContainer : FBFlutterViewContainer
 
@@ -20,7 +20,7 @@ typedef void(^swipeCallback)(UIScreenEdgePanGestureRecognizer *edgePan);
 
 - (void)setupPopGesture:(BOOL)enable;
 
-- (void)enableEffect:(BOOL)isDark result:(CGFloat)alpha;
+- (void)enableEffect:(BOOL)isDark alpha:(CGFloat)alpha;
 
 - (void)disableEffect;
 @end

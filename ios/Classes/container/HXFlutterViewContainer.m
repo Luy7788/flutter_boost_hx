@@ -71,7 +71,8 @@
 
 - (void)_handleScreenEdgePan:(UIScreenEdgePanGestureRecognizer *)edgePan {
     if (self._swipeCallback != nil) {
-        self._swipeCallback(edgePan);
+        CGPoint point = [edgePan translationInView:self.view];
+        self._swipeCallback(point);
     }
 }
 
@@ -90,7 +91,7 @@
     UIGraphicsEndImageContext();
 }
 
-- (void)enableEffect:(BOOL)isDark result:(CGFloat)alpha {
+- (void)enableEffect:(BOOL)isDark alpha:(CGFloat)alpha {
     if (self._visualEffectView == nil) {
         UIVisualEffect *blurEffect;
         if (isDark == YES) {
