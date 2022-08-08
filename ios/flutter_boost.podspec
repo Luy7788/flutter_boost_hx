@@ -21,7 +21,7 @@ A new Flutter plugin make flutter better to use!
     'Classes/FlutterBoostPlugin.h',
     'Classes/container/FBFlutterViewContainer.h',
     'Classes/container/FBFlutterContainer.h',
-    'Classes/container/HXFlutterContainer.h',
+    'Classes/container/HXFlutterViewContainer.h',
     'Classes/Options.h',
     'Classes/messages.h'
 
@@ -30,6 +30,7 @@ A new Flutter plugin make flutter better to use!
   s.pod_target_xcconfig = {
       'CLANG_CXX_LANGUAGE_STANDARD' => 'c++11',
       'CLANG_CXX_LIBRARY' => 'libc++',
+      'DEFINES_MODULE' => 'YES',
   }
   
   s.ios.deployment_target = '8.0'
