@@ -31,7 +31,7 @@
 #import "FBFlutterViewContainer.h"
 #import "Options.h"
 #import "messages.h"
-
+#import "HXFlutterViewContainer.h"
 
 @interface FlutterBoost : NSObject
 
