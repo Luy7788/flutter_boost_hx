@@ -14,7 +14,7 @@ typedef void(^swipeCallback)(CGPoint point);
 @interface HXFlutterViewContainer : FBFlutterViewContainer
 
 @property (nonatomic, assign) bool isPresent;
-@property (nonatomic, assign) bool isPlatformView;
+@property (nonatomic, assign, readonly) bool isPlatformView;
 
 - (void)setSwipeGestureListener:(swipeCallback)callback;
 
@@ -23,6 +23,9 @@ typedef void(^swipeCallback)(CGPoint point);
 - (void)enableEffect:(BOOL)isDark alpha:(CGFloat)alpha;
 
 - (void)disableEffect;
+
+- (void)setupIsPlatformView:(BOOL)flag;
+
 @end
 
 NS_ASSUME_NONNULL_END

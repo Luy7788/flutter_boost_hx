@@ -13,6 +13,7 @@
 @property (nonatomic, strong) UIVisualEffectView *_visualEffectView;
 @property (nonatomic, strong) UIScreenEdgePanGestureRecognizer *screenEdgePan;
 @property (nonatomic, copy) swipeCallback _swipeCallback;
+@property (nonatomic, assign) bool isPlatformView;
 
 @end
 
@@ -109,6 +110,14 @@
 
 - (void)disableEffect {
     [self._visualEffectView removeFromSuperview];
+}
+
+- (void)setupIsPlatformView:(BOOL)flag {
+    self.isPlatformView = flag;
+    if (flag == NO && __captureScreenView != nil) {
+        [self._captureScreenView removeFromSuperview];
+        self._captureScreenView.image = nil;
+    }
 }
 
 #pragma mark - 初始化
