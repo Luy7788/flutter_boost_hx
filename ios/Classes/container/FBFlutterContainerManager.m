@@ -50,11 +50,15 @@
 
 - (void)activeContainer:(id<FBFlutterContainer>)container forUniqueId:(NSString *)uniqueId {
     if (uniqueId == nil || container == nil) return;
-    assert(self.allContainers[uniqueId] != nil);
-    if ([self.activeContainers containsObject:container]) {
-        [self.activeContainers removeObject:container];
+//    assert(self.allContainers[uniqueId] != nil);
+    if (self.allContainers[uniqueId] == nil) {
+        NSLog(@"error: !! assert(self.allContainers[uniqueId] != nil)");
+    } else {
+        if ([self.activeContainers containsObject:container]) {
+            [self.activeContainers removeObject:container];
+        }
+        [self.activeContainers addObject:container];
     }
-    [self.activeContainers addObject:container];
 }
 
 - (void)removeContainerByUniqueId:(NSString *)uniqueId {
