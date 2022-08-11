@@ -14,6 +14,7 @@
 @property (nonatomic, strong) UIScreenEdgePanGestureRecognizer *screenEdgePan;
 @property (nonatomic, copy) swipeCallback _swipeCallback;
 @property (nonatomic, assign) bool isPlatformView;
+@property (nonatomic) CGRect platformViewRect;
 
 @end
 
@@ -78,18 +79,48 @@
 }
 
 - (void)_captureScreen {
-    [self._captureScreenView removeFromSuperview];
     CGRect _viewRect = self.view.bounds;
-    UIGraphicsBeginImageContextWithOptions(_viewRect.size, false, 0);
-    CGContextRef _ctx = UIGraphicsGetCurrentContext();
-    if (_ctx != nil) {
-        [self.view.layer renderInContext:_ctx];
-        UIImage *_image = UIGraphicsGetImageFromCurrentImageContext();
+    if (CGRectIsNull(self.platformViewRect) == NO) {
+        _viewRect = self.platformViewRect;
+    }
+//    UIGraphicsBeginImageContextWithOptions(_viewRect.size, false, 0);
+//    CGContextRef _ctx = UIGraphicsGetCurrentContext();
+//    if (_ctx != nil) {
+//        [self.view.layer renderInContext:_ctx];
+//        UIImage *_image = UIGraphicsGetImageFromCurrentImageContext();
+//        self._captureScreenView.image = _image;
+//        self._captureScreenView.frame = CGRectMake(0, 0, _viewRect.size.width, _viewRect.size.height);
+//        [self.view addSubview:self._captureScreenView];
+//    }
+//    UIGraphicsEndImageContext();
+    UIImage *_image = [self imageFromView:self.view atFrame:_viewRect];
+    if (_image != nil) {
         self._captureScreenView.image = _image;
-        self._captureScreenView.frame = CGRectMake(0, 0, _viewRect.size.width, _viewRect.size.height);
+        self._captureScreenView.frame = _viewRect;
         [self.view addSubview:self._captureScreenView];
     }
+}
+
+//获得某个范围内的屏幕图像
+
+- (UIImage *)imageFromView:(UIView *)theView atFrame:(CGRect)rect {
+    UIGraphicsBeginImageContext(theView.frame.size);
+    //用这个不会失真
+//    UIGraphicsBeginImageContextWithOptions(theView.frame.size, false, 0.0);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextSaveGState(context);
+    //这里其实就是裁剪
+    UIRectClip(rect);
+    [theView.layer renderInContext:context];
+    //设定颜色：透明
+    [[UIColor clearColor] setFill];
+    UIImage *theImage = UIGraphicsGetImageFromCurrentImageContext();
+    //获取 某图片 指定范围(rect)内的cgImage
+    CGImageRef cgImage = CGImageCreateWithImageInRect(theImage.CGImage, rect);
+    UIImage * returnImage = [UIImage imageWithCGImage:cgImage];
+    CGImageRelease(cgImage);
     UIGraphicsEndImageContext();
+    return returnImage;
 }
 
 - (void)enableEffect:(BOOL)isDark alpha:(CGFloat)alpha {
@@ -112,8 +143,9 @@
     [self._visualEffectView removeFromSuperview];
 }
 
-- (void)setupIsPlatformView:(BOOL)flag {
+- (void)setupIsPlatformView:(BOOL)flag rect:(CGRect)rect {
     self.isPlatformView = flag;
+    self.platformViewRect = rect;
     if (flag == NO && __captureScreenView != nil) {
         [self._captureScreenView removeFromSuperview];
         self._captureScreenView.image = nil;

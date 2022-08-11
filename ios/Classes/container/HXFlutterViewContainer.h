@@ -24,7 +24,7 @@ typedef void(^swipeCallback)(CGPoint point);
 
 - (void)disableEffect;
 
-- (void)setupIsPlatformView:(BOOL)flag;
+- (void)setupIsPlatformView:(BOOL)flag rect:(CGRect)rect;
 
 @end
 
