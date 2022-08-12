@@ -272,7 +272,7 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
         } else {
           final params = CommonParams()
             ..pageName = pushOption.name
-            ..arguments = pushOption.arguments as Map<String, Object>?;
+            ..arguments = pushOption.arguments;// as Map<String, Object>?;
           nativeRouterApi.pushNativeRoute(params);
           return pendNativeResult(pushOption.name);
         }
