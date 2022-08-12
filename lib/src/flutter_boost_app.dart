@@ -189,12 +189,12 @@ class FlutterBoostAppState extends State<FlutterBoostApp> {
     for (var container in containers) {
       stack.containers!.add(container.pageInfo.uniqueId);
       stack.routes = <String?, List<Map<String, Object>>>{};
-      final List<Map<String, Object?>> params = <Map<String, Object>>[];
+      final List<Map<String, Object>> params = <Map<String, Object>>[];
       for (var page in container.pages) {
-        final param = <String, Object?>{};
-        param['pageName'] = page.pageInfo.pageName;
-        param['uniqueId'] = page.pageInfo.uniqueId;
-        param['arguments'] = page.pageInfo.arguments;
+        final param = <String, Object>{};
+        param['pageName'] = page.pageInfo.pageName ?? "";
+        param['uniqueId'] = page.pageInfo.uniqueId ?? "";
+        param['arguments'] = page.pageInfo.arguments ?? {};
         params.add(param);
       }
       stack.routes![container.pageInfo.uniqueId] = params;
