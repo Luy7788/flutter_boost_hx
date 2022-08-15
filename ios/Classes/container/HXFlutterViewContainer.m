@@ -36,8 +36,12 @@
         
     }
     //解决webview在页面切换出现的渲染问题
-    if (self._captureScreenView.image == nil && self.isPlatformView == YES) {
-        [self _captureScreen];
+    if (self.isPlatformView == YES) {
+        if (self._captureScreenView.image == nil) {
+            [self _captureScreen];
+        } else {
+            [self.view addSubview:self._captureScreenView];
+        }
     }
     [super viewWillDisappear:animated];
 }
@@ -83,16 +87,6 @@
     if (CGRectIsNull(self.platformViewRect) == NO) {
         _viewRect = self.platformViewRect;
     }
-//    UIGraphicsBeginImageContextWithOptions(_viewRect.size, false, 0);
-//    CGContextRef _ctx = UIGraphicsGetCurrentContext();
-//    if (_ctx != nil) {
-//        [self.view.layer renderInContext:_ctx];
-//        UIImage *_image = UIGraphicsGetImageFromCurrentImageContext();
-//        self._captureScreenView.image = _image;
-//        self._captureScreenView.frame = CGRectMake(0, 0, _viewRect.size.width, _viewRect.size.height);
-//        [self.view addSubview:self._captureScreenView];
-//    }
-//    UIGraphicsEndImageContext();
     UIImage *_image = [self imageFromView:self.view atFrame:_viewRect];
     if (_image != nil) {
         self._captureScreenView.image = _image;
@@ -102,25 +96,50 @@
 }
 
 //获得某个范围内的屏幕图像
-
 - (UIImage *)imageFromView:(UIView *)theView atFrame:(CGRect)rect {
-    UIGraphicsBeginImageContext(theView.frame.size);
-    //用这个不会失真
-//    UIGraphicsBeginImageContextWithOptions(theView.frame.size, false, 0.0);
+    UIGraphicsBeginImageContextWithOptions(theView.frame.size, false, 0.0);
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextSaveGState(context);
-    //这里其实就是裁剪
     UIRectClip(rect);
     [theView.layer renderInContext:context];
-    //设定颜色：透明
     [[UIColor clearColor] setFill];
     UIImage *theImage = UIGraphicsGetImageFromCurrentImageContext();
+//    CGImageRef cgImage = CGImageCreateWithImageInRect(theImage.CGImage, rect);
+//    UIImage *returnImage = [UIImage imageWithCGImage:cgImage scale:[theImage scale] orientation:[theImage imageOrientation]];
+//    CGImageRelease(cgImage);
+//    UIGraphicsEndImageContext();
+//    return returnImage;
+    
     //获取 某图片 指定范围(rect)内的cgImage
-    CGImageRef cgImage = CGImageCreateWithImageInRect(theImage.CGImage, rect);
-    UIImage * returnImage = [UIImage imageWithCGImage:cgImage];
-    CGImageRelease(cgImage);
-    UIGraphicsEndImageContext();
-    return returnImage;
+    CGFloat (^rad)(CGFloat) = ^CGFloat(CGFloat deg) {
+            return deg / 180.0f * (CGFloat) M_PI;
+        };
+    // determine the orientation of the image and apply a transformation to the crop rectangle to shift it to the correct position
+    CGAffineTransform rectTransform;
+    switch (theImage.imageOrientation) {
+        case UIImageOrientationLeft:
+            rectTransform = CGAffineTransformTranslate(CGAffineTransformMakeRotation(rad(90)), 0, -theImage.size.height);
+            break;
+        case UIImageOrientationRight:
+            rectTransform = CGAffineTransformTranslate(CGAffineTransformMakeRotation(rad(-90)), -theImage.size.width, 0);
+            break;
+        case UIImageOrientationDown:
+            rectTransform = CGAffineTransformTranslate(CGAffineTransformMakeRotation(rad(-180)), -theImage.size.width, -theImage.size.height);
+            break;
+        default:
+            rectTransform = CGAffineTransformIdentity;
+    };
+    // adjust the transformation scale based on the image scale
+    rectTransform = CGAffineTransformScale(rectTransform, theImage.scale, theImage.scale);
+    // apply the transformation to the rect to create a new, shifted rect
+    CGRect transformedCropSquare = CGRectApplyAffineTransform(rect, rectTransform);
+    // use the rect to crop the image
+    CGImageRef imageRef = CGImageCreateWithImageInRect(theImage.CGImage, transformedCropSquare);
+    // create a new UIImage and set the scale and orientation appropriately
+    UIImage *result = [UIImage imageWithCGImage:imageRef scale:theImage.scale orientation:theImage.imageOrientation];
+    // memory cleanup
+    CGImageRelease(imageRef);
+    return result;
 }
 
 - (void)enableEffect:(BOOL)isDark alpha:(CGFloat)alpha {
