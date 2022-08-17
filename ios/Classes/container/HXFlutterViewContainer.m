@@ -26,6 +26,14 @@
 
 -(void)viewWillDisappear:(BOOL)animated {
     
+    //解决webview在页面切换出现的渲染问题
+    if (self.isPlatformView == YES) {
+        if (self._captureScreenView.image == nil) {
+            [self _captureScreen];
+        } else {
+            [self.view addSubview:self._captureScreenView];
+        }
+    }
     if (self.disablePopGesture != nil) {
         if (self.navigationController != nil){
             self.navigationController.interactivePopGestureRecognizer.enabled = YES;
@@ -35,14 +43,6 @@
         [self.view removeGestureRecognizer:self.screenEdgePan];
         
     }
-    //解决webview在页面切换出现的渲染问题
-    if (self.isPlatformView == YES) {
-        if (self._captureScreenView.image == nil) {
-            [self _captureScreen];
-        } else {
-            [self.view addSubview:self._captureScreenView];
-        }
-    }
     [super viewWillDisappear:animated];
 }
 
@@ -50,9 +50,11 @@
     [super viewDidAppear:animated];
     if (self._captureScreenView.image != nil && _isPlatformView == YES) {
         __weak __typeof(self)weakSelf = self;
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        self.view.userInteractionEnabled = false;
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             [weakSelf._captureScreenView removeFromSuperview];
             weakSelf._captureScreenView.image = nil;
+            weakSelf.view.userInteractionEnabled = true;
         });
     }
 }

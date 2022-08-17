@@ -8,6 +8,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
+import androidx.annotation.ColorInt;
 
 import com.idlefish.flutterboost.Assert;
 import com.idlefish.flutterboost.FlutterBoost;
@@ -130,9 +133,15 @@ public class FlutterBoostFragment extends FlutterFragment implements FlutterView
         }
 
         stage = LifecycleStage.ON_RESUME;
+        // MARK:fragment临时解决方案
+        // if (!isHidden() || (_isDetachFromEngineIfNeeded && whichFragmentIsDetach.equals(this.getUniqueId()))) {
+        //     _isDetachFromEngineIfNeeded = false;
+        //     whichFragmentIsDetach = "";
+        //     didFragmentShow();
+        //     onUpdateSystemUiOverlays();
+        // }
         if (!isHidden()) {
             didFragmentShow();
-
             // Update system UI overlays to match Flutter's desired system chrome style
             onUpdateSystemUiOverlays();
         }
@@ -144,6 +153,33 @@ public class FlutterBoostFragment extends FlutterFragment implements FlutterView
         Assert.assertNotNull(platformPlugin);
         platformPlugin.updateSystemUiOverlays();
     }
+
+    // MARK:fragment临时解决方案
+//     @Override
+//     public void platformPluginResume() {
+//         didFragmentShow();
+//         getFlutterEngine().getLifecycleChannel().appIsResumed();
+//         // Update system UI overlays to match Flutter's desired system chrome style
+//         Assert.assertNotNull(platformPlugin);
+//         platformPlugin.updateSystemUiOverlays();
+//     }
+
+//     public void setupSystemUiVisibility(@ColorInt int color) {
+//         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//             if (getContextActivity() != null) {
+//                 Window window = getContextActivity().getWindow();
+//                 if (window != null) {
+//                     window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+//                     window.setStatusBarColor(color);
+// //                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+// //                        window.getDecorView().setSystemUiVisibility(PlatformPlugin.DEFAULT_SYSTEM_UI | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+// //                    } else {
+//                         window.getDecorView().setSystemUiVisibility(PlatformPlugin.DEFAULT_SYSTEM_UI);
+// //                    }
+//                 }
+//             }
+//         }
+//     }
 
     @Override
     public RenderMode getRenderMode() {
@@ -340,8 +376,12 @@ public class FlutterBoostFragment extends FlutterFragment implements FlutterView
         }
     }
 
+    public static String whichFragmentIsDetach = "";
+    public boolean _isDetachFromEngineIfNeeded = false;
     @Override
     public void detachFromEngineIfNeeded() {
+        this._isDetachFromEngineIfNeeded = true;
+        whichFragmentIsDetach = this.getUniqueId();
         performDetach();
     }
 

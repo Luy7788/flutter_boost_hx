@@ -71,6 +71,14 @@ public class FlutterContainerManager {
         return null;
     }
 
+    // MARK:fragment临时解决方案
+    // public FlutterViewContainer getLastContainer() {
+    //     if (activeContainers.size() > 1) {
+    //         return activeContainers.get(activeContainers.size()-2);
+    //     }
+    //     return null;
+    // }
+
     public FlutterViewContainer getTopActivityContainer() {
         final int size = activeContainers.size();
         if (size == 0) {

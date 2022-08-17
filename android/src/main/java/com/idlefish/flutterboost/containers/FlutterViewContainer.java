@@ -16,4 +16,6 @@ public interface FlutterViewContainer {
     default boolean isPausing() { return false; }
     default boolean isOpaque() { return true; }
     default void detachFromEngineIfNeeded() {}
+    // MARK:fragment临时解决方案
+    // default void platformPluginResume() {}
 }
