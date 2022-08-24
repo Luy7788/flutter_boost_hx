@@ -106,42 +106,46 @@
     [theView.layer renderInContext:context];
     [[UIColor clearColor] setFill];
     UIImage *theImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
 //    CGImageRef cgImage = CGImageCreateWithImageInRect(theImage.CGImage, rect);
 //    UIImage *returnImage = [UIImage imageWithCGImage:cgImage scale:[theImage scale] orientation:[theImage imageOrientation]];
 //    CGImageRelease(cgImage);
 //    UIGraphicsEndImageContext();
 //    return returnImage;
     
-    //获取 某图片 指定范围(rect)内的cgImage
-    CGFloat (^rad)(CGFloat) = ^CGFloat(CGFloat deg) {
-            return deg / 180.0f * (CGFloat) M_PI;
+    if (theImage != nil) {
+        //获取 某图片 指定范围(rect)内的cgImage
+        CGFloat (^rad)(CGFloat) = ^CGFloat(CGFloat deg) {
+                return deg / 180.0f * (CGFloat) M_PI;
+            };
+        // determine the orientation of the image and apply a transformation to the crop rectangle to shift it to the correct position
+        CGAffineTransform rectTransform;
+        switch (theImage.imageOrientation) {
+            case UIImageOrientationLeft:
+                rectTransform = CGAffineTransformTranslate(CGAffineTransformMakeRotation(rad(90)), 0, -theImage.size.height);
+                break;
+            case UIImageOrientationRight:
+                rectTransform = CGAffineTransformTranslate(CGAffineTransformMakeRotation(rad(-90)), -theImage.size.width, 0);
+                break;
+            case UIImageOrientationDown:
+                rectTransform = CGAffineTransformTranslate(CGAffineTransformMakeRotation(rad(-180)), -theImage.size.width, -theImage.size.height);
+                break;
+            default:
+                rectTransform = CGAffineTransformIdentity;
         };
-    // determine the orientation of the image and apply a transformation to the crop rectangle to shift it to the correct position
-    CGAffineTransform rectTransform;
-    switch (theImage.imageOrientation) {
-        case UIImageOrientationLeft:
-            rectTransform = CGAffineTransformTranslate(CGAffineTransformMakeRotation(rad(90)), 0, -theImage.size.height);
-            break;
-        case UIImageOrientationRight:
-            rectTransform = CGAffineTransformTranslate(CGAffineTransformMakeRotation(rad(-90)), -theImage.size.width, 0);
-            break;
-        case UIImageOrientationDown:
-            rectTransform = CGAffineTransformTranslate(CGAffineTransformMakeRotation(rad(-180)), -theImage.size.width, -theImage.size.height);
-            break;
-        default:
-            rectTransform = CGAffineTransformIdentity;
-    };
-    // adjust the transformation scale based on the image scale
-    rectTransform = CGAffineTransformScale(rectTransform, theImage.scale, theImage.scale);
-    // apply the transformation to the rect to create a new, shifted rect
-    CGRect transformedCropSquare = CGRectApplyAffineTransform(rect, rectTransform);
-    // use the rect to crop the image
-    CGImageRef imageRef = CGImageCreateWithImageInRect(theImage.CGImage, transformedCropSquare);
-    // create a new UIImage and set the scale and orientation appropriately
-    UIImage *result = [UIImage imageWithCGImage:imageRef scale:theImage.scale orientation:theImage.imageOrientation];
-    // memory cleanup
-    CGImageRelease(imageRef);
-    return result;
+        // adjust the transformation scale based on the image scale
+        rectTransform = CGAffineTransformScale(rectTransform, theImage.scale, theImage.scale);
+        // apply the transformation to the rect to create a new, shifted rect
+        CGRect transformedCropSquare = CGRectApplyAffineTransform(rect, rectTransform);
+        // use the rect to crop the image
+        CGImageRef imageRef = CGImageCreateWithImageInRect(theImage.CGImage, transformedCropSquare);
+        // create a new UIImage and set the scale and orientation appropriately
+        UIImage *result = [UIImage imageWithCGImage:imageRef scale:theImage.scale orientation:theImage.imageOrientation];
+        // memory cleanup
+        CGImageRelease(imageRef);
+        return result;
+    }
+    return nil;
 }
 
 - (void)enableEffect:(BOOL)isDark alpha:(CGFloat)alpha {
