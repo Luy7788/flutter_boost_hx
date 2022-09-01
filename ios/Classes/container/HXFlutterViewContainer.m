@@ -74,6 +74,7 @@
         self.screenEdgePan = [[UIScreenEdgePanGestureRecognizer alloc] initWithTarget:self action:@selector(_handleScreenEdgePan:)];
         self.screenEdgePan.edges = UIRectEdgeLeft;
     }
+    self._swipeCallback = callback;
     [self.view addGestureRecognizer:self.screenEdgePan];
 }
 
