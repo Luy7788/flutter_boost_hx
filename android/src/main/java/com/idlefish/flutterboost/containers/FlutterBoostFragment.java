@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import androidx.annotation.ColorInt;
+import android.widget.FrameLayout;
 
 import com.idlefish.flutterboost.Assert;
 import com.idlefish.flutterboost.FlutterBoost;
@@ -96,6 +97,12 @@ public class FlutterBoostFragment extends FlutterFragment implements FlutterView
         // Detach FlutterView from engine before |onResume|.
         flutterView.detachFromFlutterEngine();
         if (DEBUG) Log.d(TAG, "#onCreateView: " + flutterView + ", " + this);
+        if (view == flutterView) {
+            // fix https://github.com/alibaba/flutter_boost/issues/1732
+            FrameLayout frameLayout = new FrameLayout(view.getContext());
+            frameLayout.addView(view);
+            return frameLayout;
+        }
         return view;
     }
 
@@ -326,7 +333,7 @@ public class FlutterBoostFragment extends FlutterFragment implements FlutterView
         return (stage == LifecycleStage.ON_PAUSE || stage == LifecycleStage.ON_STOP) && !isFinishing;
     }
 
-    private void didFragmentShow() {
+    protected void didFragmentShow() {
         // try to detach prevous container from the engine.
         FlutterViewContainer top = FlutterContainerManager.instance().getTopContainer();
         if (top != null && top != this) {
@@ -339,7 +346,7 @@ public class FlutterBoostFragment extends FlutterFragment implements FlutterView
         if (DEBUG) Log.d(TAG, "#didFragmentShow: " + this + ", isOpaque=" + isOpaque());
     }
 
-    private void didFragmentHide() {
+    protected void didFragmentHide() {
         FlutterBoost.instance().getPlugin().onContainerDisappeared(this);
         // We defer |performDetach| call to new Flutter container's |onResume|;
         // performDetach();
