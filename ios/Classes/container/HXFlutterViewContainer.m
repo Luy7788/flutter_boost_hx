@@ -100,20 +100,29 @@
 
 //获得某个范围内的屏幕图像
 - (UIImage *)imageFromView:(UIView *)theView atFrame:(CGRect)rect {
-    UIGraphicsBeginImageContextWithOptions(theView.frame.size, false, 0.0);
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    CGContextSaveGState(context);
-    UIRectClip(rect);
-    [theView.layer renderInContext:context];
-    [[UIColor clearColor] setFill];
+
+//    UIGraphicsBeginImageContextWithOptions(theView.bounds.size, NO, 0.0);
+//    [theView drawViewHierarchyInRect:rect afterScreenUpdates:NO];
+    UIGraphicsBeginImageContextWithOptions(theView.bounds.size, NO, [UIScreen mainScreen].scale);
+    [theView drawViewHierarchyInRect:theView.bounds afterScreenUpdates:NO];
     UIImage *theImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
+    
+    // UIGraphicsBeginImageContextWithOptions(theView.frame.size, false, 0.0);
+    // CGContextRef context = UIGraphicsGetCurrentContext();
+    // CGContextSaveGState(context);
+    // UIRectClip(rect);
+    // [theView.layer renderInContext:context];
+    // [[UIColor clearColor] setFill];
+    // UIImage *theImage = UIGraphicsGetImageFromCurrentImageContext();
+    // UIGraphicsEndImageContext();
+    
 //    CGImageRef cgImage = CGImageCreateWithImageInRect(theImage.CGImage, rect);
 //    UIImage *returnImage = [UIImage imageWithCGImage:cgImage scale:[theImage scale] orientation:[theImage imageOrientation]];
 //    CGImageRelease(cgImage);
 //    UIGraphicsEndImageContext();
 //    return returnImage;
-    
+
     if (theImage != nil) {
         //获取 某图片 指定范围(rect)内的cgImage
         CGFloat (^rad)(CGFloat) = ^CGFloat(CGFloat deg) {
