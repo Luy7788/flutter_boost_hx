@@ -6,7 +6,7 @@
 </p>
 
 # Release Note
-## 4.1.1
+## 4.2.0
 
 PS：Null-safety is already supported.
 
@@ -41,7 +41,7 @@ Open you pubspec.yaml and add the following line to dependencies:
 flutter_boost:
     git:
         url: 'https://github.com/alibaba/flutter_boost.git'
-        ref: '4.1.1'
+        ref: '4.2.0'
 ```
 
 
@@ -67,7 +67,7 @@ please read this document:
 
 
 # License
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
 
 
 ## 关于我们
